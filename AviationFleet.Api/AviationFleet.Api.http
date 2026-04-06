@@ -1,0 +1,62 @@
+@host = http://localhost:5275
+
+### Fleet settings
+GET {{host}}/api/settings/fleet
+PUT {{host}}/api/settings/fleet
+Content-Type: application/json
+
+{ "maxMechanicActiveJobs": 3 }
+
+### Aircraft
+GET {{host}}/api/aircraft
+
+DELETE {{host}}/api/aircraft/00000000-0000-0000-0000-000000000000
+
+POST {{host}}/api/aircraft
+Content-Type: application/json
+
+{
+  "tailNumber": "N100AB",
+  "totalFlightHours": 100,
+  "maintenanceThresholdHours": 500,
+  "hoursAtLastMaintenance": 0,
+  "locationState": 0,
+  "operationalStatus": 0
+}
+
+### Update hours (returns alert + auto-ticket flags)
+PUT {{host}}/api/aircraft/00000000-0000-0000-0000-000000000000/hours
+Content-Type: application/json
+
+{ "totalFlightHours": 520 }
+
+### Location / operational / confirm ready
+PUT {{host}}/api/aircraft/00000000-0000-0000-0000-000000000000/location
+Content-Type: application/json
+
+{ "locationState": 1 }
+
+PUT {{host}}/api/aircraft/00000000-0000-0000-0000-000000000000/operational-status
+Content-Type: application/json
+
+{ "operationalStatus": 3 }
+
+POST {{host}}/api/aircraft/00000000-0000-0000-0000-000000000000/confirm-maintenance-complete
+
+### Mechanics
+GET {{host}}/api/mechanics
+
+DELETE {{host}}/api/mechanics/00000000-0000-0000-0000-000000000000
+
+### Maintenance
+POST {{host}}/api/maintenance/ticket
+Content-Type: application/json
+
+{
+  "aircraftId": "00000000-0000-0000-0000-000000000000",
+  "issueDescription": "Inspect hydraulics",
+  "requiredCertification": 2
+}
+
+GET {{host}}/api/maintenance/tickets
+GET {{host}}/api/maintenance/warnings

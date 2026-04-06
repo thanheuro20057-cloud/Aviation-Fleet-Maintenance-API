@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aviation Fleet — Operations</title>
+  <link rel="stylesheet" href="app.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="alert-dock" id="alert-dock" aria-live="assertive" aria-atomic="true"></div>
+
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1>Aviation Fleet</h1>
+        <p class="tagline">Operations &amp; maintenance</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-ghost" id="btn-settings">Fleet settings</button>
+      <button type="button" class="btn btn-ghost" id="btn-all-tickets">All tickets</button>
+      <button type="button" class="btn btn-ghost" id="btn-refresh-all">Refresh</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" class="tab is-active" data-tab="status">Fleet status</button>
+    <button type="button" class="tab" data-tab="fleet">Aircraft detail</button>
+    <button type="button" class="tab" data-tab="crew">Crew</button>
+    <button type="button" class="tab" data-tab="tickets">New ticket</button>
+    <button type="button" class="tab" data-tab="predict">Warnings</button>
+  </nav>
+
+  <main class="main">
+    <section id="panel-status" class="panel is-visible" role="tabpanel">
+      <div class="panel-head">
+        <h2>All aircraft status</h2>
+        <p class="hint inline">Location + operational state. Updates when hours, tickets, or maintenance completion change.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="table-status">
+          <thead>
+            <tr>
+              <th>Tail</th>
+              <th>Where</th>
+              <th>Operational</th>
+              <th>Total hrs</th>
+              <th>Airframe due in</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="empty" id="empty-status" hidden>No aircraft yet.</p>
+      </div>
+    </section>
+
+    <section id="panel-fleet" class="panel" role="tabpanel" hidden>
+      <div class="panel-head">
+        <h2>Aircraft &amp; components</h2>
+        <button type="button" class="btn btn-primary" id="btn-open-aircraft">Add aircraft</button>
+      </div>
+      <p class="hint">Each aircraft gets standard components with default thresholds. <strong>Hrs since svc</strong> moves with <em>changes</em> to total aircraft hours (up or down), and resets when you confirm maintenance complete.</p>
+      <div id="aircraft-detail-cards"></div>
+    </section>
+
+    <section id="panel-crew" class="panel" role="tabpanel" hidden>
+      <div class="panel-head">
+        <h2>Mechanics</h2>
+        <button type="button" class="btn btn-primary" id="btn-open-mechanic">Add mechanic</button>
+      </div>
+      <p class="hint">Mechanic names must be unique. Dispatch obeys max active jobs from fleet settings.</p>
+      <div class="table-wrap">
+        <table class="data-table" id="table-mechanics">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Certification</th>
+              <th>Available</th>
+              <th>Workload</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="empty" id="empty-mechanics" hidden>No mechanics yet.</p>
+      </div>
+    </section>
+
+    <section id="panel-tickets" class="panel" role="tabpanel" hidden>
+      <div class="panel-head"><h2>Create maintenance ticket</h2></div>
+      <div class="card">
+        <form id="form-ticket-inline">
+          <label class="field"><span>Aircraft</span>
+            <select name="aircraftId" id="ticket-aircraft-select" required></select>
+          </label>
+          <label class="field"><span>Required certification</span>
+            <select name="requiredCertification">
+              <option value="0">Avionics</option>
+              <option value="1">Engine</option>
+              <option value="2">Hydraulics</option>
+            </select>
+          </label>
+          <label class="field"><span>Issue description</span>
+            <textarea name="issueDescription" rows="3" required></textarea>
+          </label>
+          <button type="submit" class="btn btn-primary">Create &amp; dispatch</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="panel-predict" class="panel" role="tabpanel" hidden>
+      <div class="panel-head">
+        <h2>Warning roster</h2>
+        <button type="button" class="btn btn-primary" id="btn-run-predict">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="table-warnings">
+          <thead>
+            <tr>
+              <th>Tail</th>
+              <th>Hrs remaining (airframe)</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="empty" id="empty-warnings" hidden>No warnings.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast-host" id="toasts" aria-live="polite"></div>
+
+  <dialog class="modal wide" id="modal-tickets-list" aria-labelledby="tickets-list-title">
+    <div class="modal-card">
+      <header class="modal-head">
+        <h3 id="tickets-list-title">Issued tickets</h3>
+        <button type="button" class="icon-btn" data-close-dialog>×</button>
+      </header>
+      <div class="modal-body scroll">
+        <table class="data-table compact" id="table-all-tickets">
+          <thead>
+            <tr>
+              <th>Tail</th>
+              <th>When</th>
+              <th>Status</th>
+              <th>Mechanic</th>
+              <th>Cert</th>
+              <th>Auto</th>
+              <th>Part</th>
+              <th>Issue</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="empty" id="empty-all-tickets" hidden>No tickets yet.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="modal-settings" aria-labelledby="settings-title">
+    <form class="modal-card" id="form-settings">
+      <header class="modal-head">
+        <h3 id="settings-title">Fleet settings</h3>
+        <button type="button" class="icon-btn" data-close-dialog>×</button>
+      </header>
+      <div class="modal-body">
+        <label class="field"><span>Max active jobs per mechanic</span>
+          <input type="number" name="maxJobs" min="1" max="100" required />
+        </label>
+        <p class="hint">Mechanics at or above this count will not receive new assignments until work completes.</p>
+      </div>
+      <footer class="modal-foot">
+        <button type="button" class="btn btn-ghost" data-close-dialog>Close</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="modal-aircraft" aria-labelledby="modal-aircraft-title">
+    <form class="modal-card" id="form-aircraft">
+      <header class="modal-head">
+        <h3 id="modal-aircraft-title">Add aircraft</h3>
+        <button type="button" class="icon-btn" data-close-dialog>×</button>
+      </header>
+      <div class="modal-body">
+        <label class="field"><span>Tail number</span><input name="tailNumber" required maxlength="32" /></label>
+        <div class="grid-2">
+          <label class="field"><span>Total flight hours</span><input name="totalFlightHours" type="number" step="0.1" min="0" value="0" required /></label>
+          <label class="field"><span>Airframe threshold (hrs)</span><input name="maintenanceThresholdHours" type="number" step="1" min="1" value="500" required /></label>
+        </div>
+        <label class="field"><span>Hours at last airframe maintenance</span>
+          <input name="hoursAtLastMaintenance" type="number" step="0.1" min="0" value="0" required />
+        </label>
+        <div class="grid-2">
+          <label class="field"><span>Location</span>
+            <select name="locationState">
+              <option value="0">On ground</option>
+              <option value="1">In the air</option>
+            </select>
+          </label>
+          <label class="field"><span>Operational</span>
+            <select name="operationalStatus">
+              <option value="0">Ready</option>
+              <option value="1">Maintenance required</option>
+              <option value="2">In maintenance</option>
+              <option value="3">Unavailable (major repair)</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <footer class="modal-foot">
+        <button type="button" class="btn btn-ghost" data-close-dialog>Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="modal-mechanic" aria-labelledby="modal-mechanic-title">
+    <form class="modal-card" id="form-mechanic">
+      <header class="modal-head">
+        <h3 id="modal-mechanic-title">Add mechanic</h3>
+        <button type="button" class="icon-btn" data-close-dialog>×</button>
+      </header>
+      <div class="modal-body">
+        <label class="field"><span>Name</span><input name="name" required maxlength="200" /></label>
+        <label class="field"><span>Certification</span>
+          <select name="certification">
+            <option value="0">Avionics</option>
+            <option value="1">Engine</option>
+            <option value="2">Hydraulics</option>
+          </select>
+        </label>
+        <label class="field check"><input type="checkbox" name="isAvailable" checked /><span>Available</span></label>
+      </div>
+      <footer class="modal-foot">
+        <button type="button" class="btn btn-ghost" data-close-dialog>Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
