@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\PROJECTS\\test navblue\\AviationFleet.Tests\\AviationFleet.Tests.csproj": {}
+    "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Tests\\AviationFleet.Tests.csproj": {}
   },
   "projects": {
-    "C:\\PROJECTS\\test navblue\\AviationFleet.Api\\AviationFleet.Api.csproj": {
+    "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Api\\AviationFleet.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\PROJECTS\\test navblue\\AviationFleet.Api\\AviationFleet.Api.csproj",
+        "projectUniqueName": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Api\\AviationFleet.Api.csproj",
         "projectName": "AviationFleet.Api",
-        "projectPath": "C:\\PROJECTS\\test navblue\\AviationFleet.Api\\AviationFleet.Api.csproj",
+        "projectPath": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Api\\AviationFleet.Api.csproj",
         "packagesPath": "C:\\Users\\thanh\\.nuget\\packages\\",
-        "outputPath": "C:\\PROJECTS\\test navblue\\AviationFleet.Api\\obj\\",
+        "outputPath": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -85,14 +85,14 @@
         }
       }
     },
-    "C:\\PROJECTS\\test navblue\\AviationFleet.Tests\\AviationFleet.Tests.csproj": {
+    "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Tests\\AviationFleet.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\PROJECTS\\test navblue\\AviationFleet.Tests\\AviationFleet.Tests.csproj",
+        "projectUniqueName": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Tests\\AviationFleet.Tests.csproj",
         "projectName": "AviationFleet.Tests",
-        "projectPath": "C:\\PROJECTS\\test navblue\\AviationFleet.Tests\\AviationFleet.Tests.csproj",
+        "projectPath": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Tests\\AviationFleet.Tests.csproj",
         "packagesPath": "C:\\Users\\thanh\\.nuget\\packages\\",
-        "outputPath": "C:\\PROJECTS\\test navblue\\AviationFleet.Tests\\obj\\",
+        "outputPath": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -114,8 +114,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\PROJECTS\\test navblue\\AviationFleet.Api\\AviationFleet.Api.csproj": {
-                "projectPath": "C:\\PROJECTS\\test navblue\\AviationFleet.Api\\AviationFleet.Api.csproj"
+              "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Api\\AviationFleet.Api.csproj": {
+                "projectPath": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Api\\AviationFleet.Api.csproj"
               }
             }
           }

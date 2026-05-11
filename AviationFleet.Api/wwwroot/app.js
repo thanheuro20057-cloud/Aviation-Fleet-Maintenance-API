@@ -78,8 +78,130 @@ function fmtNum(n) {
   return String(n);
 }
 
+function fmtPct(n) {
+  return `${fmtNum(n)}%`;
+}
+
+function fmtMoney(n) {
+  return new Intl.NumberFormat("en-CA", {
+    style: "currency",
+    currency: "CAD",
+    maximumFractionDigits: 0,
+  }).format(Number(n || 0));
+}
+
 function airframeRemaining(a) {
   return a.maintenanceThresholdHours - (a.totalFlightHours - a.hoursAtLastMaintenance);
+}
+
+async function loadBusinessDashboard() {
+  const dashboard = await api.get("/api/business/dashboard");
+  renderBusinessKpis(dashboard.kpis);
+  renderResourceAllocation(dashboard.resourceAllocation);
+  renderInsights(dashboard.insights);
+  renderTrends(dashboard.trends);
+  renderActions(dashboard.actions);
+}
+
+function renderBusinessKpis(k) {
+  const host = document.getElementById("business-kpis");
+  const cards = [
+    ["Fleet availability", fmtPct(k.fleetAvailabilityPercent), `${k.readyAircraft}/${k.aircraftCount} aircraft ready`, "availability"],
+    ["Crew utilization", fmtPct(k.crewUtilizationPercent), "Assigned jobs vs certified capacity", "utilization"],
+    ["Open backlog", fmtNum(k.openTickets), `${k.unassignedTickets} waiting for dispatch`, "backlog"],
+    ["Protected downtime value", fmtMoney(k.estimatedMonthlySavings), `${fmtNum(k.estimatedDowntimeHoursProtected)} hours protected`, "value"],
+  ];
+  host.innerHTML = cards
+    .map(
+      ([label, value, detail, tone]) => `
+      <article class="kpi-card kpi-card--${tone}">
+        <span>${escapeHtml(label)}</span>
+        <strong>${escapeHtml(value)}</strong>
+        <p>${escapeHtml(detail)}</p>
+      </article>`,
+    )
+    .join("");
+}
+
+function renderResourceAllocation(rows) {
+  const host = document.getElementById("allocation-list");
+  if (!rows.length) {
+    host.innerHTML = '<p class="empty">No crew allocation data.</p>';
+    return;
+  }
+  host.innerHTML = rows
+    .map((r) => {
+      const pct = Math.min(100, Math.max(0, Number(r.utilizationPercent || 0)));
+      return `
+        <article class="allocation-row">
+          <div class="allocation-top">
+            <strong>${escapeHtml(r.certification)}</strong>
+            <span>${fmtPct(r.utilizationPercent)} utilized</span>
+          </div>
+          <div class="capacity-bar" aria-label="${escapeHtml(r.certification)} utilization">
+            <span style="width: ${pct}%"></span>
+          </div>
+          <dl class="allocation-metrics">
+            <div><dt>Available crew</dt><dd>${fmtNum(r.availableMechanics)}</dd></div>
+            <div><dt>Active jobs</dt><dd>${fmtNum(r.activeJobs)}</dd></div>
+            <div><dt>Backlog</dt><dd>${fmtNum(r.openBacklog)}</dd></div>
+            <div><dt>Capacity left</dt><dd>${fmtNum(r.capacityRemaining)}</dd></div>
+          </dl>
+          <p>${escapeHtml(r.recommendation)}</p>
+        </article>`;
+    })
+    .join("");
+}
+
+function renderInsights(rows) {
+  const host = document.getElementById("insight-list");
+  host.innerHTML = rows
+    .map(
+      (i) => `
+      <article class="insight insight--${escapeHtml(i.severity.toLowerCase())}">
+        <div>
+          <span>${escapeHtml(i.severity)}</span>
+          <strong>${escapeHtml(i.title)}</strong>
+        </div>
+        <p>${escapeHtml(i.detail)}</p>
+        <small>${escapeHtml(i.businessImpact)}</small>
+      </article>`,
+    )
+    .join("");
+}
+
+function renderTrends(rows) {
+  const host = document.getElementById("trend-list");
+  host.innerHTML = rows
+    .map(
+      (t) => `
+      <article class="trend">
+        <div>
+          <strong>${escapeHtml(t.name)}</strong>
+          <span>${escapeHtml(t.direction)}</span>
+        </div>
+        <p><b>${fmtNum(t.value)}</b> ${escapeHtml(t.unit)}</p>
+        <small>${escapeHtml(t.detail)}</small>
+      </article>`,
+    )
+    .join("");
+}
+
+function renderActions(rows) {
+  const host = document.getElementById("action-list");
+  host.innerHTML = rows
+    .map(
+      (a) => `
+      <li>
+        <span>${fmtNum(a.priority)}</span>
+        <div>
+          <strong>${escapeHtml(a.action)}</strong>
+          <p>${escapeHtml(a.expectedOutcome)}</p>
+          <small>${escapeHtml(a.owner)}</small>
+        </div>
+      </li>`,
+    )
+    .join("");
 }
 
 async function loadFleetSettingsForm() {
@@ -290,23 +412,39 @@ function wireTabs() {
   const tabs = document.querySelectorAll(".tab");
   const panels = {
     status: document.getElementById("panel-status"),
+    business: document.getElementById("panel-business"),
     fleet: document.getElementById("panel-fleet"),
     crew: document.getElementById("panel-crew"),
     tickets: document.getElementById("panel-tickets"),
     predict: document.getElementById("panel-predict"),
   };
+
+  const activateTab = (key, updateUrl = true) => {
+    if (!panels[key]) return;
+    tabs.forEach((t) => t.classList.toggle("is-active", t.dataset.tab === key));
+    Object.entries(panels).forEach(([k, el]) => {
+      const on = k === key;
+      el.classList.toggle("is-visible", on);
+      el.hidden = !on;
+      if (k === "tickets" && on) fillTicketAircraftSelect();
+      if (k === "business" && on) loadBusinessDashboard().catch((e) => toast(e.message, "err"));
+    });
+
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", key);
+      history.replaceState(null, "", url);
+    }
+  };
+
   tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
-      const key = tab.dataset.tab;
-      tabs.forEach((t) => t.classList.toggle("is-active", t === tab));
-      Object.entries(panels).forEach(([k, el]) => {
-        const on = k === key;
-        el.classList.toggle("is-visible", on);
-        el.hidden = !on;
-        if (k === "tickets") fillTicketAircraftSelect();
-      });
+      activateTab(tab.dataset.tab);
     });
   });
+
+  const initialTab = new URLSearchParams(window.location.search).get("tab");
+  if (initialTab && panels[initialTab]) activateTab(initialTab, false);
 }
 
 document.querySelectorAll("[data-close-dialog]").forEach((b) => {
@@ -475,6 +613,9 @@ document.getElementById("form-ticket-inline").addEventListener("submit", async (
 });
 
 document.getElementById("btn-refresh-all").addEventListener("click", () => refreshAll());
+document.getElementById("btn-refresh-business").addEventListener("click", () =>
+  loadBusinessDashboard().catch((e) => toast(e.message, "err")),
+);
 document.getElementById("btn-run-predict").addEventListener("click", () =>
   loadWarnings().catch((e) => toast(e.message, "err")),
 );
@@ -484,6 +625,7 @@ async function refreshAll() {
     await loadAircraft();
     await loadMechanics();
     await loadWarnings();
+    await loadBusinessDashboard();
     fillTicketAircraftSelect();
   } catch (e) {
     toast(e.message, "err");

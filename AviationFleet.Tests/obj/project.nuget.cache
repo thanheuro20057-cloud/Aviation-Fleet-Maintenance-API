@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "O8yT/VWlJ2Y=",
+  "dgSpecHash": "Cb7lHIlxYSg=",
   "success": true,
-  "projectFilePath": "C:\\PROJECTS\\test navblue\\AviationFleet.Tests\\AviationFleet.Tests.csproj",
+  "projectFilePath": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Tests\\AviationFleet.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\thanh\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",
     "C:\\Users\\thanh\\.nuget\\packages\\coverlet.collector\\6.0.2\\coverlet.collector.6.0.2.nupkg.sha512",

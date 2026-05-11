@@ -17,7 +17,7 @@
       <span class="brand-mark" aria-hidden="true"></span>
       <div>
         <h1>Aviation Fleet</h1>
-        <p class="tagline">Operations &amp; maintenance</p>
+        <p class="tagline">Maintenance intelligence for fleet uptime, crew capacity, and cost control</p>
       </div>
     </div>
     <div class="header-actions">
@@ -29,6 +29,7 @@
 
   <nav class="tabs" role="tablist">
     <button type="button" class="tab is-active" data-tab="status">Fleet status</button>
+    <button type="button" class="tab" data-tab="business">Business dashboard</button>
     <button type="button" class="tab" data-tab="fleet">Aircraft detail</button>
     <button type="button" class="tab" data-tab="crew">Crew</button>
     <button type="button" class="tab" data-tab="tickets">New ticket</button>
@@ -36,6 +37,18 @@
   </nav>
 
   <main class="main">
+    <section class="value-band" aria-label="Product value">
+      <div>
+        <p class="eyebrow">Operations command center</p>
+        <h2>Convert maintenance data into crew allocation decisions, downtime risk signals, and executive-ready savings.</h2>
+      </div>
+      <div class="value-points" aria-label="Business value points">
+        <span>Optimize certified crew capacity</span>
+        <span>Predict aircraft service risk</span>
+        <span>Quantify protected downtime cost</span>
+      </div>
+    </section>
+
     <section id="panel-status" class="panel is-visible" role="tabpanel">
       <div class="panel-head">
         <h2>All aircraft status</h2>
@@ -56,6 +69,62 @@
           <tbody></tbody>
         </table>
         <p class="empty" id="empty-status" hidden>No aircraft yet.</p>
+      </div>
+    </section>
+
+    <section id="panel-business" class="panel" role="tabpanel" hidden>
+      <div class="panel-head">
+        <div>
+          <h2>Business dashboard</h2>
+          <p class="hint inline">Live rollup for maintenance leaders: value protected, crew bottlenecks, operational risk, and next actions.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-refresh-business">Refresh dashboard</button>
+      </div>
+
+      <div class="kpi-grid" id="business-kpis"></div>
+
+      <div class="business-layout">
+        <section class="surface surface-large" aria-labelledby="allocation-title">
+          <div class="surface-head">
+            <div>
+              <h3 id="allocation-title">Resource allocation</h3>
+              <p>Certified crew capacity vs active maintenance demand.</p>
+            </div>
+          </div>
+          <div id="allocation-list" class="allocation-list"></div>
+        </section>
+
+        <section class="surface" aria-labelledby="insight-title">
+          <div class="surface-head">
+            <div>
+              <h3 id="insight-title">Actionable insights</h3>
+              <p>Signals that affect uptime, cost, and SLA confidence.</p>
+            </div>
+          </div>
+          <div id="insight-list" class="insight-list"></div>
+        </section>
+      </div>
+
+      <div class="business-layout secondary">
+        <section class="surface" aria-labelledby="trend-title">
+          <div class="surface-head">
+            <div>
+              <h3 id="trend-title">Trend signals</h3>
+              <p>Operational patterns that point to future risk.</p>
+            </div>
+          </div>
+          <div id="trend-list" class="trend-list"></div>
+        </section>
+
+        <section class="surface surface-large" aria-labelledby="actions-title">
+          <div class="surface-head">
+            <div>
+              <h3 id="actions-title">Recommended actions</h3>
+              <p>Prioritized moves for planners, fleet managers, and leadership.</p>
+            </div>
+          </div>
+          <ol id="action-list" class="action-list"></ol>
+        </section>
       </div>
     </section>
 

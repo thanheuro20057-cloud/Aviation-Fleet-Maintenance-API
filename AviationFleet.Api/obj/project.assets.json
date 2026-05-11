@@ -2073,11 +2073,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\PROJECTS\\test navblue\\AviationFleet.Api\\AviationFleet.Api.csproj",
+      "projectUniqueName": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Api\\AviationFleet.Api.csproj",
       "projectName": "AviationFleet.Api",
-      "projectPath": "C:\\PROJECTS\\test navblue\\AviationFleet.Api\\AviationFleet.Api.csproj",
+      "projectPath": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Api\\AviationFleet.Api.csproj",
       "packagesPath": "C:\\Users\\thanh\\.nuget\\packages\\",
-      "outputPath": "C:\\PROJECTS\\test navblue\\AviationFleet.Api\\obj\\",
+      "outputPath": "C:\\PROJECTS\\test navblue\\Aviation Fleet Maintenance API\\AviationFleet.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
