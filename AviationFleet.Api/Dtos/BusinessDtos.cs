@@ -6,7 +6,8 @@ public sealed record BusinessDashboardDto(
     IReadOnlyList<ResourceAllocationDto> ResourceAllocation,
     IReadOnlyList<BusinessInsightDto> Insights,
     IReadOnlyList<TrendSignalDto> Trends,
-    IReadOnlyList<ActionRecommendationDto> Actions);
+    IReadOnlyList<ActionRecommendationDto> Actions,
+    IReadOnlyList<BusinessAssumptionDto> Assumptions);
 
 public sealed record BusinessKpiDto(
     int AircraftCount,
@@ -17,6 +18,9 @@ public sealed record BusinessKpiDto(
     double CrewUtilizationPercent,
     int PredictiveWarnings,
     double EstimatedDowntimeHoursProtected,
+    decimal DirectOperatingCostExposure,
+    decimal MaintenanceCostAtRisk,
+    decimal AogExposureProtected,
     decimal EstimatedMonthlySavings);
 
 public sealed record ResourceAllocationDto(
@@ -47,3 +51,10 @@ public sealed record ActionRecommendationDto(
     string Action,
     string Owner,
     string ExpectedOutcome);
+
+public sealed record BusinessAssumptionDto(
+    string Name,
+    decimal Value,
+    string Unit,
+    string Source,
+    string SourceUrl);

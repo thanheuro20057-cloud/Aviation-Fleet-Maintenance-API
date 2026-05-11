@@ -141,6 +141,7 @@ public sealed class AircraftService(
         a.Parts.OrderBy(p => p.PartType)
             .Select(p => new AircraftPartResponseDto(
                 p.Id,
+                AircraftPartDisplay.Code(p.PartType),
                 p.PartType,
                 AircraftPartDisplay.Name(p.PartType),
                 p.HoursSinceLastMaintenance,

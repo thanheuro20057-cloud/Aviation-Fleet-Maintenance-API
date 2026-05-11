@@ -4,6 +4,7 @@ namespace AviationFleet.Api.Dtos;
 
 public sealed record AircraftPartResponseDto(
     Guid Id,
+    string PartCode,
     AircraftPartType PartType,
     string PartName,
     double HoursSinceLastMaintenance,

@@ -101,6 +101,7 @@ async function loadBusinessDashboard() {
   renderInsights(dashboard.insights);
   renderTrends(dashboard.trends);
   renderActions(dashboard.actions);
+  renderAssumptions(dashboard.assumptions, dashboard.kpis);
 }
 
 function renderBusinessKpis(k) {
@@ -109,7 +110,12 @@ function renderBusinessKpis(k) {
     ["Fleet availability", fmtPct(k.fleetAvailabilityPercent), `${k.readyAircraft}/${k.aircraftCount} aircraft ready`, "availability"],
     ["Crew utilization", fmtPct(k.crewUtilizationPercent), "Assigned jobs vs certified capacity", "utilization"],
     ["Open backlog", fmtNum(k.openTickets), `${k.unassignedTickets} waiting for dispatch`, "backlog"],
-    ["Protected downtime value", fmtMoney(k.estimatedMonthlySavings), `${fmtNum(k.estimatedDowntimeHoursProtected)} hours protected`, "value"],
+    [
+      "Protected value",
+      fmtMoney(k.estimatedMonthlySavings),
+      `${fmtNum(k.estimatedDowntimeHoursProtected)} hrs, ${fmtMoney(k.aogExposureProtected)} AOG protected`,
+      "value",
+    ],
   ];
   host.innerHTML = cards
     .map(
@@ -204,6 +210,26 @@ function renderActions(rows) {
     .join("");
 }
 
+function renderAssumptions(rows, kpis) {
+  const host = document.getElementById("assumption-list");
+  const formula = `
+    <article class="formula">
+      <strong>Savings formula</strong>
+      <p>${fmtMoney(kpis.aogExposureProtected)} AOG exposure protected + ${fmtMoney(kpis.maintenanceCostAtRisk)} maintenance cost at risk + ${fmtMoney(kpis.directOperatingCostExposure)} dispatch-delay operating exposure = ${fmtMoney(kpis.estimatedMonthlySavings)}</p>
+    </article>`;
+  const items = (rows || [])
+    .map(
+      (a) => `
+      <a class="assumption" href="${escapeHtml(a.sourceUrl)}" target="_blank" rel="noreferrer">
+        <span>${escapeHtml(a.name)}</span>
+        <strong>${fmtNum(a.value)} ${escapeHtml(a.unit)}</strong>
+        <small>${escapeHtml(a.source)}</small>
+      </a>`,
+    )
+    .join("");
+  host.innerHTML = formula + items;
+}
+
 async function loadFleetSettingsForm() {
   try {
     const s = await api.get("/api/settings/fleet");
@@ -261,7 +287,7 @@ function renderAircraftCards() {
     card.className = "aircraft-card";
     const parts = (a.parts || [])
       .map((p) => {
-        const pid = p.id ?? "";
+        const pid = p.partCode ?? p.id ?? "";
         const pname = p.partName ?? String(p.partType);
         return `<tr>
           <td class="mono part-id" title="${escapeHtml(pid)}">${escapeHtml(pid)}</td>
@@ -280,7 +306,7 @@ function renderAircraftCards() {
         <button type="button" class="btn btn-sm btn-danger" data-remove-aircraft="${escapeHtml(a.id)}">Remove aircraft</button>
       </div>
       <table class="data-table compact inner">
-        <thead><tr><th>Part ID</th><th>Component</th><th>Hrs since svc</th><th>Threshold (hrs)</th></tr></thead>
+        <thead><tr><th>Part code</th><th>Component</th><th>Hrs since svc</th><th>Threshold (hrs)</th></tr></thead>
         <tbody>${parts}</tbody>
       </table>`;
     card.querySelector("[data-remove-aircraft]")?.addEventListener("click", () => deleteAircraft(a));

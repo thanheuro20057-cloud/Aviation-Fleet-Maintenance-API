@@ -53,7 +53,7 @@ public sealed class FlightHoursAutomationService(
                 : CertificationType.Engine;
 
             var desc = primaryPart is not null
-                ? $"AUTO: Component {primaryPart.PartType} exceeded maintenance threshold for {aircraft.TailNumber}."
+                ? $"AUTO: Component {AircraftPartDisplay.Label(primaryPart.PartType)} exceeded maintenance threshold for {aircraft.TailNumber}."
                 : $"AUTO: Airframe maintenance threshold exceeded for {aircraft.TailNumber}.";
 
             var ticket = new MaintenanceTicket

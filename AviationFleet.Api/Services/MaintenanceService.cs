@@ -64,7 +64,9 @@ public sealed class MaintenanceService(
     {
         var tail = t.Aircraft?.TailNumber ?? t.AircraftId.ToString();
         var mech = t.Mechanic?.Name;
-        var partLabel = t.RelatedPartType?.ToString();
+        var partLabel = t.RelatedPartType is { } part
+            ? AircraftPartDisplay.Label(part)
+            : null;
         return new MaintenanceTicketDetailDto(
             t.Id,
             tail,
